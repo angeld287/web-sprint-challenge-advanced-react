@@ -10,9 +10,9 @@ export default function AppFunctional(props) {
   // THE FOLLOWING HELPERS ARE JUST RECOMMENDATIONS.
   // You can delete them and build your own logic from scratch.
   const [steps, setSteps] = useState(initialSteps);
+  const [email, setEmail] = useState(initialEmail);
   const [currentPosition, setCurrentPosition] = useState(initialIndex);
   const [message, setMessage ] = useState(initialMessage)
-  const [email, setEmail, handleInputEmail] = useInput();
   const squares = [0, 1, 2, 3, 4, 5, 6, 7, 8];
 
   function getXY() {
@@ -118,17 +118,9 @@ export default function AppFunctional(props) {
         <button id="reset" onClick={reset}>reset</button>
       </div>
       <form onSubmit={onSubmit}>
-        <input id="email" type="email" value={email} placeholder="type email" onChange={(e) => handleInputEmail(e.target.value)}></input>
+        <input id="email" type="email" value={email} placeholder="type email" onChange={(e) => setEmail(e.target.value)}></input>
         <input id="submit" type="submit"></input>
       </form>
     </div>
   )
-}
-
-export const useInput = (initialValue) => {
-  const [value, setValue] = useState(initialValue);
-  const handleChanges = updatedValue => {
-    setValue(updatedValue);
-  };
-  return [value, setValue, handleChanges];
 }
