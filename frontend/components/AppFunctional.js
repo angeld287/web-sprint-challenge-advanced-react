@@ -9,8 +9,9 @@ const initialIndex = 4 // the index the "B" is at
 export default function AppFunctional(props) {
   // THE FOLLOWING HELPERS ARE JUST RECOMMENDATIONS.
   // You can delete them and build your own logic from scratch.
+  const [steps, setSteps] = useState(initialSteps);
   const [currentPosition, setCurrentPosition] = useState(initialIndex);
-  const [errorMessage, setErrorMessage ] = useState(initialMessage)
+  const [message, setMessage ] = useState(initialMessage)
   const [email, setEmail, handleInputEmail] = useInput();
   const squares = [0, 1, 2, 3, 4, 5, 6, 7, 8];
 
@@ -40,14 +41,16 @@ export default function AppFunctional(props) {
   function reset() {
     // Use this helper to reset all states to their initial values.
     setEmail(initialEmail);
+    setSteps(initialSteps);
     setCurrentPosition(initialIndex);
+    setMessage(initialMessage)
   }
 
   function getNextIndex(direction) {
     // This helper takes a direction ("left", "up", etc) and calculates what the next index
     // of the "B" would be. If the move is impossible because we are at the edge of the grid,
     // this helper should return the current index unchanged.
-    setErrorMessage(initialMessage);
+    setMessage(initialMessage);
     const coordinates = getXY();
     if(direction === "up") coordinates.y -=1
     if(direction === "down") coordinates.y +=1
@@ -56,10 +59,10 @@ export default function AppFunctional(props) {
 
     const newIndex = convertXYToIndex(coordinates);
     //if(squares.find(number => number === newIndex) !== undefined) return newIndex
-    if((direction === "left" || direction === "right") && coordinates.x > 0 && coordinates.x < 4) return newIndex
-    if((direction === "up" || direction === "down") && coordinates.y > 0 && coordinates.y < 4) return newIndex
+    if((direction === "left" || direction === "right") && coordinates.x > 0 && coordinates.x < 4){ setSteps(steps+1); return newIndex}
+    if((direction === "up" || direction === "down") && coordinates.y > 0 && coordinates.y < 4){ setSteps(steps+1); return newIndex}
 
-    setErrorMessage(`You can't go ${direction}`);
+    setMessage(`You can't go ${direction}`);
     return currentPosition;
   }
 
@@ -74,15 +77,26 @@ export default function AppFunctional(props) {
     setCurrentPosition(getNextIndex(evt.target.id))
   }
 
-  function onSubmit(evt) {
+  async function onSubmit(evt) {
     // Use a POST request to send a payload to the server.
+    evt.preventDefault();
+    const {x, y} = getXY();
+    const result = await fetch("http://localhost:9000/api/result", {
+      method: "POST",
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ x, y, steps, email })
+    });
+
+    setMessage((await result.json()).message)
   }
 
   return (
     <div id="wrapper" className={props.className}>
       <div className="info">
         <h3 id="coordinates">{getXYMessage()}</h3>
-        <h3 id="steps">You moved 0 times</h3>
+        <h3 id="steps">You moved {steps} times</h3>
       </div>
       <div id="grid">
         {
@@ -94,7 +108,7 @@ export default function AppFunctional(props) {
         }
       </div>
       <div className="info">
-        <h3 id="message">{errorMessage}</h3>
+        <h3 id="message">{message}</h3>
       </div>
       <div id="keypad">
         <button id="left" onClick={move}>LEFT</button>
