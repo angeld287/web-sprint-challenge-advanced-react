@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 
 // Suggested initial states
 const initialMessage = ''
@@ -58,7 +58,6 @@ export default function AppFunctional(props) {
     if(direction === "right") coordinates.x +=1
 
     const newIndex = convertXYToIndex(coordinates);
-    //if(squares.find(number => number === newIndex) !== undefined) return newIndex
     if((direction === "left" || direction === "right") && coordinates.x > 0 && coordinates.x < 4){ setSteps(steps+1); return newIndex}
     if((direction === "up" || direction === "down") && coordinates.y > 0 && coordinates.y < 4){ setSteps(steps+1); return newIndex}
 
