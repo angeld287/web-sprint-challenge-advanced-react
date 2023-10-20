@@ -9,13 +9,10 @@ const initialIndex = 4 // the index the "B" is at
 export default function AppFunctional(props) {
   // THE FOLLOWING HELPERS ARE JUST RECOMMENDATIONS.
   // You can delete them and build your own logic from scratch.
-  const [currentPosition, setCurrentPosition] = useState(4)
-  const [email, setEmail, handleInputEmail] = useInput()
+  const [currentPosition, setCurrentPosition] = useState(initialIndex);
+  const [errorMessage, setErrorMessage ] = useState(initialMessage)
+  const [email, setEmail, handleInputEmail] = useInput();
   const squares = [0, 1, 2, 3, 4, 5, 6, 7, 8];
-
-  useEffect(() => {
-    console.log(currentPosition)
-  }, [currentPosition])
 
   function getXY() {
     // It it not necessary to have a state to track the coordinates.
@@ -42,14 +39,15 @@ export default function AppFunctional(props) {
 
   function reset() {
     // Use this helper to reset all states to their initial values.
-    setEmail("");
-    setCurrentPosition(4);
+    setEmail(initialEmail);
+    setCurrentPosition(initialIndex);
   }
 
   function getNextIndex(direction) {
     // This helper takes a direction ("left", "up", etc) and calculates what the next index
     // of the "B" would be. If the move is impossible because we are at the edge of the grid,
     // this helper should return the current index unchanged.
+    setErrorMessage(initialMessage);
     const coordinates = getXY();
     if(direction === "up") coordinates.y -=1
     if(direction === "down") coordinates.y +=1
@@ -57,15 +55,16 @@ export default function AppFunctional(props) {
     if(direction === "right") coordinates.x +=1
 
     const newIndex = convertXYToIndex(coordinates);
-    if(squares.find(number => number === newIndex) !== undefined) return newIndex
+    //if(squares.find(number => number === newIndex) !== undefined) return newIndex
+    if((direction === "left" || direction === "right") && coordinates.x > 0 && coordinates.x < 4) return newIndex
+    if((direction === "up" || direction === "down") && coordinates.y > 0 && coordinates.y < 4) return newIndex
 
+    setErrorMessage(`You can't go ${direction}`);
     return currentPosition;
   }
 
   const convertXYToIndex = ({x, y}) => {
-    console.log(x, y);
-
-    return y === 1 ? (x - 1) : y === 2 ? (x + y) : y === 3 ? ((x + y) + 2) : 4
+    return y === 1 ? (x - 1) : y === 2 ? (x + y) : y === 3 ? ((x + y) + 2) : initialIndex
   }
 
   function move(evt) {
@@ -95,7 +94,7 @@ export default function AppFunctional(props) {
         }
       </div>
       <div className="info">
-        <h3 id="message"></h3>
+        <h3 id="message">{errorMessage}</h3>
       </div>
       <div id="keypad">
         <button id="left" onClick={move}>LEFT</button>
